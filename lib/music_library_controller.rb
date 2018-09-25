@@ -19,7 +19,7 @@ class MusicLibraryController
       puts "To quit, type 'exit'."
       puts "What would you like to do?"
       reply = gets.strip
-      
+
       # set CLI commands
       case reply
         when "list songs"
@@ -41,46 +41,33 @@ class MusicLibraryController
   # CLI Methods
 
   def list_songs
-    # sort songs by name
-    Song.all.sort {|a, b| a.name <=> b.name}.each_with_index do |song, i|
-      puts "#{i + 1}. #{song.artist.name} - #{song.name} - #{song.genre.name}"
-    end
+    Song.list_all
   end
 
   def list_artists
-    # sort artists by name
-    Artist.all.sort {|a, b| a.name <=> b.name}.each_with_index do |artist, i|
-      puts "#{i + 1}. #{artist.name}"
-    end
+    Artist.list_all
   end
 
   def list_genres
-    # sort genres by name
-    Genre.all.sort {|a, b| a.name <=> b.name}.each_with_index do |genre, i|
-      puts "#{i + 1}. #{genre.name}"
-    end
+    Genre.list_all
   end
 
   def list_songs_by_artist
     # ask user to input artist name
     puts "Please enter the name of an artist:"
-    artist = gets.strip
+    name = gets.strip
     # print list of artist songs, alphabetized by title
-    artists = Song.all.select! {|song| song.artist.name == artist}
-    artists.sort {|a, b| a.name <=> b.name}.each_with_index do |song, i|
-      puts "#{i + 1}. #{song.name} - #{song.genre.name}"
-    end
+    artist = Artist.find_by_name(name)
+    artist&.song_list
   end
 
   def list_songs_by_genre
     # ask user to input genre name
     puts "Please enter the name of a genre:"
-    genre = gets.strip
+    input = gets.strip
     # print list of genre's songs, alphabetized by title
-    genres = Song.all.select! {|song| song.genre.name == genre}
-    genres.sort {|a, b| a.name <=> b.name}.each_with_index do |song, i|
-      puts "#{i + 1}. #{song.artist.name} - #{song.name}"
-    end
+    genre = Genre.find_by_name(input)
+    genre&.song_list
   end
 
   def play_song
@@ -88,9 +75,7 @@ class MusicLibraryController
     puts "Which song number would you like to play?"
     number = gets.strip.to_i
     # plays the selected song
-    Song.all.sort {|a, b| a.name <=> b.name}.each_with_index do |song, i|
-      puts "Playing #{song.name} by #{song.artist.name}" if i + 1 == number
-    end
+    Song.all_sorted[number-1]&.play unless number < 1 || number > Song.count
   end
 
 end

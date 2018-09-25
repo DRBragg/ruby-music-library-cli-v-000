@@ -1,6 +1,6 @@
 require "pry"
 
-class Song
+class Song < Base
   attr_accessor :name
   attr_reader :artist, :genre
   @@all = []
@@ -15,18 +15,28 @@ class Song
     @@all
   end
 
+  def display
+    %{#{artist.name} - #{name} - #{genre.name}}
+  end
+
+  def display_by_genre
+    %{#{name} - #{genre.name}}
+  end
+
+  def display_by_artist
+    %{#{artist.name} - #{name}}
+  end
+
+  def play
+    puts %{Playing #{name} by #{artist.name}}
+  end
+
   def save
     @@all << self
   end
 
   def self.destroy_all
     @@all.clear
-  end
-
-  def self.create(name)
-    song = self.new(name)
-    song.save
-    song
   end
 
   def artist=(artist)
@@ -37,18 +47,6 @@ class Song
   def genre=(genre)
     @genre = genre
     genre.songs << self unless genre.songs.include?(self)
-  end
-
-  def self.find_by_name(name)
-    @@all.detect {|song| song.name == name}
-  end
-
-  def self.find_or_create_by_name(name)
-    if !self.find_by_name(name)
-      Song.create(name)
-    else
-      self.find_by_name(name)
-    end
   end
 
   def self.new_from_filename(file_name)
@@ -67,5 +65,4 @@ class Song
     song.save
     song
   end
-
 end
