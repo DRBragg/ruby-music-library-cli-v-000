@@ -1,7 +1,6 @@
-class Genre
+class Genre < Base
   attr_accessor :name
-  extend Concerns::Findable
-  
+
   @@all = []
 
   def initialize(name)
@@ -21,18 +20,22 @@ class Genre
     @@all.clear
   end
 
-  def self.create(name)
-    genre = self.new(name)
-    genre.save
-    genre
-  end
-
   def songs
     @songs
   end
 
+  def sorted_songs
+    @songs.sort {|a, b| a.name <=> b.name}
+  end
+
+  def song_list
+    sorted_songs.each_with_index do |song, i|
+      puts "#{i + 1}. #{song.display_by_artist}"
+    end
+  end
+
   def artists
-    self.songs.map {|song| song.artist}.uniq
+    self.songs.map(&:artist).uniq
   end
 
 end
